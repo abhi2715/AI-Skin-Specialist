@@ -19,8 +19,11 @@ from voice_of_the_doctor import convert_text_to_doctor_audio
 from voice_of_the_patient import transcribe_patient_voice
 
 BASE_DIR = Path(__file__).resolve().parent
-AUDIO_OUT_DIR = BASE_DIR / "audio_output"
-AUDIO_OUT_DIR.mkdir(exist_ok=True)
+AUDIO_OUT_DIR = Path("/tmp/audio_output")
+try:
+    AUDIO_OUT_DIR.mkdir(exist_ok=True, parents=True)
+except Exception:
+    pass # In case of permissions issues on local vs vercel
 
 app = FastAPI(title="AI Skin Specialist")
 
@@ -93,11 +96,17 @@ async def analyze(
         audio_out_path = AUDIO_OUT_DIR / audio_filename
         convert_text_to_doctor_audio(doctor_text, output_filepath=audio_out_path)
 
+        import base64
+        with open(audio_out_path, "rb") as f:
+            audio_base64 = base64.b64encode(f.read()).decode("utf-8")
+        
+        audio_data_uri = f"data:audio/mp3;base64,{audio_base64}"
+
         return JSONResponse(
             {
                 "transcript": patient_text,
                 "guidance": doctor_text,
-                "audio_url": f"/audio/{audio_filename}",
+                "audio_data": audio_data_uri,
             }
         )
 
@@ -109,6 +118,12 @@ async def analyze(
                     os.unlink(p)
                 except OSError:
                     pass
+        # Clean up generated audio file
+        try:
+            if 'audio_out_path' in locals() and audio_out_path.exists():
+                os.unlink(audio_out_path)
+        except OSError:
+            pass
 
 
 @app.get("/audio/{filename}")

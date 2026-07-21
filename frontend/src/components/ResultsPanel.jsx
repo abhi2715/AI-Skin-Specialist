@@ -98,7 +98,7 @@ export default function ResultsPanel({ result, loading }) {
           <Volume2 size={12} />
           Voice Response
         </div>
-        <AudioPlayer src={result.audio_url} />
+        <AudioPlayer src={result.audio_data} />
       </div>
     </div>
   );

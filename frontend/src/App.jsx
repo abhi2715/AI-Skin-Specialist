@@ -53,7 +53,7 @@ export default function App() {
         date: new Date().toLocaleString(),
         transcript: data.transcript,
         guidance: data.guidance,
-        audio_url: data.audio_url,
+        audio_data: data.audio_data,
       };
       const updated = [entry, ...history].slice(0, 20);
       setHistory(updated);

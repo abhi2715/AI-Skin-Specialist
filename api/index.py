@@ -14,6 +14,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
+# Ensure the api directory is in sys.path so Vercel can find the local modules
+import sys
+sys.path.append(str(Path(__file__).resolve().parent))
+
 from brain_of_the_doctor import brain_of_the_doctor
 from voice_of_the_doctor import convert_text_to_doctor_audio
 from voice_of_the_patient import transcribe_patient_voice

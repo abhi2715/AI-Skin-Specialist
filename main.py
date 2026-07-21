@@ -136,7 +136,7 @@ async def serve_audio(filename: str):
 
 
 # ── Serve React build in production ──
-FRONTEND_BUILD = BASE_DIR / "frontend" / "dist"
+FRONTEND_BUILD = BASE_DIR / "dist"
 if FRONTEND_BUILD.exists():
     app.mount("/", StaticFiles(directory=str(FRONTEND_BUILD), html=True), name="frontend")
 

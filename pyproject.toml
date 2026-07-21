@@ -1,0 +1,22 @@
+[project]
+name = "ai-skin-specialist"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "deepgram-sdk>=7.4.0",
+    "fastapi>=0.115.0",
+    "groq>=1.5.0",
+    "gtts>=2.5.4",
+    "numpy>=2.4.6",
+    "path>=17.1.1",
+    "pillow>=12.3.0",
+    "pyaudio>=0.2.14",
+    "pydub>=0.25.1",
+    "python-dotenv>=1.2.2",
+    "python-multipart>=0.0.20",
+    "sounddevice>=0.5.5",
+    "speechrecognition>=3.17.0",
+    "uvicorn>=0.34.0",
+]

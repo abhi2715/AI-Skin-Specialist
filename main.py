@@ -81,26 +81,33 @@ async def analyze(
             video_path = vid_tmp.name
 
         # ── Pipeline ──
-        # 1. Transcribe patient voice
-        patient_text = transcribe_patient_voice(audio_path)
+        try:
+            # 1. Transcribe patient voice
+            patient_text = transcribe_patient_voice(audio_path)
 
-        # 2. Get doctor's guidance (vision model)
-        doctor_text = brain_of_the_doctor(
-            patient_text=patient_text,
-            image_filepath=image_path,
-            video_filepath=video_path,
-        )
+            # 2. Get doctor's guidance (vision model)
+            doctor_text = brain_of_the_doctor(
+                patient_text=patient_text,
+                image_filepath=image_path,
+                video_filepath=video_path,
+            )
 
-        # 3. Generate doctor voice audio
-        audio_filename = f"doctor_{uuid.uuid4().hex[:8]}.mp3"
-        audio_out_path = AUDIO_OUT_DIR / audio_filename
-        convert_text_to_doctor_audio(doctor_text, output_filepath=audio_out_path)
-
-        import base64
-        with open(audio_out_path, "rb") as f:
-            audio_base64 = base64.b64encode(f.read()).decode("utf-8")
-        
-        audio_data_uri = f"data:audio/mp3;base64,{audio_base64}"
+            # 3. Generate doctor voice audio
+            audio_filename = f"doctor_{uuid.uuid4().hex[:8]}.mp3"
+            audio_out_path = AUDIO_OUT_DIR / audio_filename
+            convert_text_to_doctor_audio(doctor_text, output_filepath=audio_out_path)
+            
+            import base64
+            with open(audio_out_path, "rb") as f:
+                audio_base64 = base64.b64encode(f.read()).decode("utf-8")
+            
+            audio_data_uri = f"data:audio/mp3;base64,{audio_base64}"
+            
+        except Exception as e:
+            error_message = str(e)
+            if "api_key" in error_message.lower() or "unauthorized" in error_message.lower() or "missing" in error_message.lower():
+                raise HTTPException(status_code=401, detail="API Key is missing or invalid in Vercel Settings.")
+            raise HTTPException(status_code=500, detail=f"AI Processing Error: {error_message}")
 
         return JSONResponse(
             {
